@@ -1,5 +1,7 @@
 require("dotenv").config();
 const puppeteer = require("puppeteer");
+const sessionFactory = require("./factories/sessionFactory");
+const userFactory = require("./factories/userFactory");
 
 let browser, page;
 
@@ -28,22 +30,11 @@ test("Click en login empieza el proceso de oauth", async () => {
 });
 
 test("Click me logueo, debe mostrar el boton de cerrar sesión", async () => {
-  const id = "64f731f975185731d0554965";
+  const user = await userFactory();
+  const { session, sig } = sessionFactory(user);
 
-  const sessionObject = {
-    passport: {
-      user: id,
-    },
-  };
-  const Buffer = require("safe-buffer").Buffer;
-  const sessionString = Buffer.from(JSON.stringify(sessionObject)).toString("base64");
-  const Keygrip = require("keygrip");
-  const keys = require("../config/keys");
-  const keygrip = Keygrip([keys.cookieKey]);
-  const sessionSigned = keygrip.sign("session=" + sessionString);
-
-  await page.setCookie({ name: "session", value: sessionString });
-  await page.setCookie({ name: "session.sig", value: sessionSigned });
+  await page.setCookie({ name: "session", value: session });
+  await page.setCookie({ name: "session.sig", value: sig });
   await page.goto("localhost:3000");
   await page.waitFor(`a[href="/auth/logout"]`);
 

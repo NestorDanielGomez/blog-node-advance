@@ -1,5 +1,3 @@
-require("dotenv").config();
-
 const Page = require("./helpers/page");
 
 let page;
@@ -14,8 +12,7 @@ afterEach(async () => {
 });
 
 test("Titulo del Header correcto", async () => {
-  const text = await page.$eval("a.brand-logo", (el) => el.innerHTML);
-
+  const text = await page.getContentOfPage("a.brand-logo");
   expect(text).toEqual("Blogs | node | advanced");
 });
 
@@ -29,5 +26,6 @@ test("Click me logueo, debe mostrar el boton de cerrar sesión", async () => {
   await page.login();
 
   const text = await page.$eval(`a[href="/auth/logout"]`, (el) => el.innerHTML);
+
   expect(text).toEqual("Cerrar Sesión");
 });

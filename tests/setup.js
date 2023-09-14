@@ -1,3 +1,6 @@
+//lo que tiene que esperar antes de fallar.
+jest.setTimeout(20000);
+
 require("dotenv").config();
 require("../models/User");
 
